@@ -1,13 +1,15 @@
 import chai, { expect } from 'chai'
-import { Contract } from 'ethers'
-import { MaxUint256 } from 'ethers/constants'
-import { bigNumberify, hexlify, keccak256, defaultAbiCoder, toUtf8Bytes } from 'ethers/utils'
-import { solidity, MockProvider, deployContract } from 'ethereum-waffle'
+import { Contract, BigNumber } from 'ethers'
+import {utils, constants} from 'ethers'
+const { hexlify, keccak256, defaultAbiCoder, toUtf8Bytes } = utils
+const { MaxUint256 } = constants
+import { solidity } from 'ethereum-waffle'
 import { ecsign } from 'ethereumjs-util'
+import { ethers, waffle } from "hardhat"
 
 import { expandTo18Decimals, getApprovalDigest } from './shared/utilities'
 
-import ERC20 from '../build/ERC20.json'
+import {ERC20} from '../typechain/ERC20'
 
 chai.use(solidity)
 
@@ -15,16 +17,14 @@ const TOTAL_SUPPLY = expandTo18Decimals(10000)
 const TEST_AMOUNT = expandTo18Decimals(10)
 
 describe('UniswapV2ERC20', () => {
-  const provider = new MockProvider({
-    hardfork: 'istanbul',
-    mnemonic: 'horn horn horn horn horn horn horn horn horn horn horn horn',
-    gasLimit: 9999999
-  })
-  const [wallet, other] = provider.getWallets()
+  const [wallet, other, nebula] = waffle.provider.getWallets()
 
   let token: Contract
   beforeEach(async () => {
-    token = await deployContract(wallet, ERC20, [TOTAL_SUPPLY])
+    const tokenFactory = await ethers.getContractFactory("ERC20")
+    token = (await tokenFactory.deploy(
+      TOTAL_SUPPLY
+    )) as ERC20
   })
 
   it('name, symbol, decimals, totalSupply, balanceOf, DOMAIN_SEPARATOR, PERMIT_TYPEHASH', async () => {
@@ -111,6 +111,6 @@ describe('UniswapV2ERC20', () => {
       .to.emit(token, 'Approval')
       .withArgs(wallet.address, other.address, TEST_AMOUNT)
     expect(await token.allowance(wallet.address, other.address)).to.eq(TEST_AMOUNT)
-    expect(await token.nonces(wallet.address)).to.eq(bigNumberify(1))
+    expect(await token.nonces(wallet.address)).to.eq(BigNumber.from(1))
   })
 })

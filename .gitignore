@@ -2,3 +2,5 @@ node_modules/
 build/
 typechain/
 abi/
+artifacts/
+cache/

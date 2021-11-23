@@ -18,7 +18,8 @@ const TEST_AMOUNT = expandTo18Decimals(10)
 
 describe('UniswapV2ERC20', () => {
   const [wallet, other, nebula] = waffle.provider.getWallets()
-
+  // console.log(waffle.provider);
+  
   let token: Contract
   beforeEach(async () => {
     const tokenFactory = await ethers.getContractFactory("ERC20")
@@ -44,7 +45,7 @@ describe('UniswapV2ERC20', () => {
             ),
             keccak256(toUtf8Bytes(name)),
             keccak256(toUtf8Bytes('1')),
-            1,
+            31337, // changed chain id
             token.address
           ]
         )

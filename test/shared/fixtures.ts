@@ -30,8 +30,8 @@ interface PairFixture extends FactoryFixture {
   pair: Contract
 }
 
-export async function pairFixture([wallet]: Wallet[], provider: any, ): Promise<PairFixture> {
-  const { factory } = await factoryFixture(provider, [wallet])
+export async function pairFixture([wallet]: Wallet[], provider: any): Promise<PairFixture> {
+  const { factory } = await factoryFixture([wallet], provider)
   
   const tokenFactory = await ethers.getContractFactory("ERC20")
   const tokenA = (await tokenFactory.deploy(

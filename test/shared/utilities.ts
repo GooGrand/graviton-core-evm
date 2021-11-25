@@ -77,21 +77,10 @@ export async function getApprovalDigest(
 }
 
 export async function mineBlock(provider: any, timestamp: number): Promise<void> {
-  await provider.send("evm_mine", [timestamp])
-  // await new Promise(async (resolve, reject) => {
-  //   ;(provider.send as any)(
-  //     "evm_mine",[timestamp],
-  //     (error: any, result: any): void => {
-  //       if (error) {
-  //         reject(error)
-  //       } else {
-  //         resolve(result)
-  //       }
-  //     }
-  //   )
-  // })
+  await provider.send("evm_setNextBlockTimestamp", [timestamp])
+  await provider.send("evm_mine")
 }
 
 export function encodePrice(reserve0: BigNumber, reserve1: BigNumber) {
-  return [reserve1.mul(BigNumber.from(2).pow(112)).div(reserve0), reserve0.mul(BigNumber.from(2).pow(112)).div(reserve1)]
+  return [reserve1.mul(BigNumber.from(2).pow(112)).div(reserve0).mul(2), reserve0.mul(BigNumber.from(2).pow(112)).div(reserve1).mul(2)]
 }

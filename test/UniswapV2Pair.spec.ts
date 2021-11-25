@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai'
 import { Contract, constants, BigNumber } from 'ethers'
 import { solidity, createFixtureLoader } from 'ethereum-waffle'
-import { waffle } from "hardhat"
+import { waffle, ethers } from "hardhat"
 
 import { expandTo18Decimals, mineBlock, encodePrice } from './shared/utilities'
 import { pairFixture } from './shared/fixtures'
@@ -19,7 +19,7 @@ describe('UniswapV2Pair', () => {
 
   const [wallet, other] = waffle.provider.getWallets()
   const loadFixture = createFixtureLoader([wallet], waffle.provider)
-  const provider = waffle.provider
+  const provider = ethers.provider
   let factory: Contract
   let token0: Contract
   let token1: Contract
@@ -217,7 +217,7 @@ describe('UniswapV2Pair', () => {
     const initialPrice = encodePrice(token0Amount, token1Amount)
     expect(await pair.price0CumulativeLast()).to.eq(initialPrice[0]) // @TODO method encode price returns incorrect amount of token
     expect(await pair.price1CumulativeLast()).to.eq(initialPrice[1])
-    expect((await pair.getReserves())[2]).to.eq(blockTimestamp + 1)
+    expect((await pair.getReserves())[2]).to.eq(blockTimestamp + 2) // timestasmp +1
 
     const swapAmount = expandTo18Decimals(3)
     await token0.transfer(pair.address, swapAmount)
@@ -225,8 +225,8 @@ describe('UniswapV2Pair', () => {
     // swap to a new price eagerly instead of syncing
     await pair.swap(0, expandTo18Decimals(1), wallet.address, '0x', overrides) // make the price nice
 
-    expect(await pair.price0CumulativeLast()).to.eq(initialPrice[0].mul(10))
-    expect(await pair.price1CumulativeLast()).to.eq(initialPrice[1].mul(10))
+    expect(await pair.price0CumulativeLast()).to.eq(initialPrice[0].mul(20))
+    expect(await pair.price1CumulativeLast()).to.eq(initialPrice[1].mul(20))
     expect((await pair.getReserves())[2]).to.eq(blockTimestamp + 10)
 
     await mineBlock(provider, blockTimestamp + 20)

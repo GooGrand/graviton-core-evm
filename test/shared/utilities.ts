@@ -84,3 +84,10 @@ export async function mineBlock(provider: any, timestamp: number): Promise<void>
 export function encodePrice(reserve0: BigNumber, reserve1: BigNumber) {
   return [reserve1.mul(BigNumber.from(2).pow(112)).div(reserve0).mul(2), reserve0.mul(BigNumber.from(2).pow(112)).div(reserve1).mul(2)]
 }
+
+export async function mineBlocks(provider: any, blocks: number): Promise<void> {
+  while(blocks > 0) {
+      await provider.send("evm_mine")
+      blocks -= 1
+  }
+} 

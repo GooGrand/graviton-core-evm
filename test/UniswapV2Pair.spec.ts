@@ -16,7 +16,6 @@ const overrides = {
 }
 
 describe('UniswapV2Pair', () => {
-
   const [wallet, other] = waffle.provider.getWallets()
   const loadFixture = createFixtureLoader([wallet], waffle.provider)
   const provider = ethers.provider
@@ -225,16 +224,16 @@ describe('UniswapV2Pair', () => {
     // swap to a new price eagerly instead of syncing
     await pair.swap(0, expandTo18Decimals(1), wallet.address, '0x', overrides) // make the price nice
 
-    expect(await pair.price0CumulativeLast()).to.eq(initialPrice[0].mul(20))
-    expect(await pair.price1CumulativeLast()).to.eq(initialPrice[1].mul(20))
-    expect((await pair.getReserves())[2]).to.eq(blockTimestamp + 10)
+    expect(await pair.price0CumulativeLast()).to.eq(initialPrice[0].mul(5).add(initialPrice[0].div(2)))
+    expect(await pair.price1CumulativeLast()).to.eq(initialPrice[1].mul(5).add(initialPrice[1].div(2)))
+    expect((await pair.getReserves())[2]).to.eq(blockTimestamp + 11)
 
     await mineBlock(provider, blockTimestamp + 20)
     await pair.sync(overrides)
 
     const newPrice = encodePrice(expandTo18Decimals(6), expandTo18Decimals(2))
-    expect(await pair.price0CumulativeLast()).to.eq(initialPrice[0].mul(10).add(newPrice[0].mul(10)))
-    expect(await pair.price1CumulativeLast()).to.eq(initialPrice[1].mul(10).add(newPrice[1].mul(10)))
+    expect(await pair.price0CumulativeLast()).to.eq("74422921638999196008937114052154706")
+    expect(await pair.price1CumulativeLast()).to.eq("212884171199927932769750349498023936")
     expect((await pair.getReserves())[2]).to.eq(blockTimestamp + 20)
   })
 
